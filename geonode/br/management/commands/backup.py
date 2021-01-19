@@ -26,6 +26,7 @@ import requests
 import traceback
 import re
 import six
+import logging
 
 from .utils import utils
 
@@ -43,6 +44,9 @@ from geonode.utils import (DisableDjangoSignals,
                            copy_tree)
 
 from geonode.base.models import Configuration
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -276,7 +280,7 @@ class Command(BaseCommand):
                 try:
                     shutil.rmtree(target_folder)
                 except Exception:
-                    print("WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'")
+                    logger.warning("WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'")
 
                 print("Backup Finished. Archive generated.")
 
@@ -452,7 +456,7 @@ class Command(BaseCommand):
                 if not os.path.isdir(external_path) and os.path.exists(external_path):
                     shutil.copy2(abspath, external_path)
             except shutil.SameFileError:
-                print("WARNING: {} and {} are the same file!".format(abspath, external_path))
+                logger.warning("WARNING: {} and {} are the same file!".format(abspath, external_path))
 
         def match_filename(key, text, regexp=re.compile("^(.+)$")):
             if key in ('filename', ):
@@ -466,7 +470,7 @@ class Command(BaseCommand):
                         if os.path.exists(abspath):
                             return abspath
                     except Exception:
-                        print("WARNING: Error while trying to dump {}".format(text))
+                        logger.warning("WARNING: Error while trying to dump {}".format(text))
                         return
 
         def match_fileurl(key, text, regexp=re.compile("^file:(.+)$")):
@@ -481,7 +485,7 @@ class Command(BaseCommand):
                         if os.path.exists(abspath):
                             return abspath
                     except Exception:
-                        print("WARNING: Error while trying to dump {}".format(text))
+                        logger.warning("WARNING: Error while trying to dump {}".format(text))
                         return
 
         def dump_external_resources_from_xml(path):

@@ -27,6 +27,7 @@ import subprocess
 import signal
 import sys
 import time
+import logging
 
 from urllib.parse import urlparse
 from urllib.request import urlopen, Request
@@ -90,6 +91,9 @@ with open("dev_config.yml", 'r') as f:
     dev_config = yaml.load(f, Loader=yaml.Loader)
 
 
+logger = logging.getLogger(__name__)
+
+
 def grab(src, dest, name):
     src, dest, name = map(str, (src, dest, name))
     print(f" src, dest, name --> {src} {dest} {name}")
@@ -127,7 +131,8 @@ def grab(src, dest, name):
                 f.write(data)
         print(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
         if total_size != 0 and wrote != total_size:
-            print("ERROR, something went wrong")
+            logger.error("ERROR, something went wrong. Data could not be written. Expected to write " + wrote +
+                         " but wrote " + total_size + " instead")
         else:
             shutil.move("output.bin", dest)
         try:
@@ -669,10 +674,10 @@ def start_geoserver(options):
     url = GEOSERVER_BASE_URL
 
     if urlparse(GEOSERVER_BASE_URL).hostname != 'localhost':
-        print("Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'")
+        logger.warning("Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'")
 
     if not GEOSERVER_BASE_URL.endswith('/'):
-        print("Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'")
+        logger.error("Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'")
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
