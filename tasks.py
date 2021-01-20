@@ -379,13 +379,13 @@ def _rest_api_availability(url):
         r = requests.request('get', url, verify=False)
         r.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-        print("GeoServer connection error is {0}".format(e))
+        logger.error("GeoServer connection error is {0}".format(e))
         return False
     except requests.exceptions.HTTPError as er:
-        print("GeoServer HTTP error is {0}".format(er))
+        logger.error("GeoServer HTTP error is {0}".format(er))
         return False
     else:
-        print("GeoServer API are available!")
+        logger.info("GeoServer API are available!")
         return True
 
 
